@@ -1,13 +1,13 @@
-var shareImageButton = document.querySelector('#share-image-button');
-var createPostArea = document.querySelector('#create-post');
-var closeCreatePostModalButton = document.querySelector('#close-create-post-modal-btn');
+let shareImageButton = document.querySelector('#share-image-button');
+let createPostArea = document.querySelector('#create-post');
+let closeCreatePostModalButton = document.querySelector('#close-create-post-modal-btn');
 
 function openCreatePostModal() {
   createPostArea.style.display = 'block';
   if (deferredPrompt) {
     deferredPrompt.prompt();
 
-    deferredPrompt.userChoice.then(function(choiceResult) {
+    deferredPrompt.userChoice.then((choiceResult) => {
       console.log(choiceResult.outcome);
 
       if (choiceResult.outcome === 'dismissed') {

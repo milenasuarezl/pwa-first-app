@@ -1,5 +1,5 @@
 
-var deferredPrompt;
+let deferredPrompt;
 
 if (!window.Promise) {
   window.Promise = Promise;
@@ -8,23 +8,23 @@ if (!window.Promise) {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
     .register('/sw.js')
-    .then(function () {
+    .then(() => {
       console.log('Service worker registered!');
     })
-    .catch(function(err) {
+    .catch((err) => {
       console.log(err);
     });
 }
 
-window.addEventListener('beforeinstallprompt', function(event) {
-  console.log('beforeinstallprompt fired');
-  event.preventDefault();
+window.addEventListener('beforeinstallprompt', (event) => {
+  console.log('beforeinstallprompt fired'); 
+  event.preventDefault;
   deferredPrompt = event;
   return false;
 });
 
-var promise = new Promise(function(resolve, reject) {
-  setTimeout(function() {
+var promise = new Promise((resolve, reject) => {
+  setTimeout(() => {
     //resolve('This is executed once the timer is done!');
     reject({code: 500, message: 'An error occurred!'});
     //console.log('This is executed once the timer is done!');
@@ -35,25 +35,25 @@ var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://httpbin.org/ip');
 xhr.responseType = 'json';
 
-xhr.onload = function() {
+xhr.onload = () => {
   console.log(xhr.response);
 };
 
-xhr.onerror = function() {
+xhr.onerror = () => {
   console.log('Error!');
 };
 
 xhr.send();
 
 fetch('https://httpbin.org/ip')
-  .then(function(response) {
+  .then((response) => {
     console.log(response);
     return response.json();
   })
-  .then(function(data) {
+  .then((data) => {
     console.log(data);
   })
-  .catch(function(err) {
+  .catch((err) => {
     console.log(err);
   });
 
@@ -66,30 +66,22 @@ fetch('https://httpbin.org/post', {
   mode: 'cors',
   body: JSON.stringify({message: 'Does this work?'})
 })
-  .then(function(response) {
+  .then((response) => {
     console.log(response);
     return response.json();
   })
-  .then(function(data) {
+  .then((data) => {
     console.log(data);
   })
-  .catch(function(err) {
+  .catch((err) => {
     console.log(err);
   });
 
-// promise.then(function(text) {
-//   return text;
-// }, function(err) {
-//   console.log(err.code, err.message)
-// }).then(function(newText) {
-//   console.log(newText);
-// });
-
-promise.then(function(text) {
+promise.then((text) => {
   return text;
-}).then(function(newText) {
+}).then((newText) => {
   console.log(newText);
-}).catch(function(err) {
+}).catch((err) => {
   console.log(err.code, err.message);
 });
 

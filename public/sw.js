@@ -1,4 +1,4 @@
-var CACHE_STATIC_NAME = 'static-v4';
+var CACHE_STATIC_NAME = 'static-v13';
 var CACHE_DYNAMIC_NAME = 'dynamic-v2';
 
 self.addEventListener('install', (event) => {
@@ -10,6 +10,7 @@ self.addEventListener('install', (event) => {
             cache.addAll([
                 '/',
                 '/index.html',
+                '/offline.html',
                 '/src/js/app.js',
                 '/src/js/feed.js',
                 '/src/js/promise.js',
@@ -33,16 +34,30 @@ self.addEventListener('activate', (event) => {
         .then((keyList) => {
             return Promise.all(keyList.map((key) => {
                 if (key !== CACHE_STATIC_NAME && key !== CACHE_DYNAMIC_NAME) {
-                  console.log('[Service Worker] Removing old cache.', key);
-                  return caches.delete(key);
+                    console.log('[Service Worker] Removing old cache.', key);
+                    return caches.delete(key);
                 }
-              }));
+            }));
         })
     );
-    return self.clients.claim();    
+    return self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
+//Cache then Network & Dynamic Caching
+self.addEventListener('fetch', function(event) {
+    event.respondWith(
+      caches.open(CACHE_DYNAMIC_NAME)
+        .then((cache) => {
+          return fetch(event.request)
+            .then((res) => {
+              cache.put(event.request, res.clone());
+              return res;
+            });
+        })
+    );
+});
+
+/* self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(event.request)
         .then((response) => {
@@ -58,9 +73,43 @@ self.addEventListener('fetch', (event) => {
                 })
             })
             .catch((err) => {
-
+                return caches.open(CACHE_STATIC_NAME)
+                .then(function(cache) {
+                  return cache.match('/offline.html');
+                }); 
             })
           }
         })
     );
-  });
+  }); 
+
+//Network with cache cache fallback
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+    fetch(event.request)
+        .then((res) => {
+            return caches.open(CACHE_DYNAMIC_NAME)
+            .then((cache) => {
+                cache.put(event.request.url, res.clone());
+                return res;
+            })
+        })
+        .catch((err) => {
+            caches.match(event.request)
+        })
+    );
+});
+
+//cache only
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request)
+    );
+}); 
+
+//Network only
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        fetch(event.request)
+    );
+}); */

@@ -20,6 +20,15 @@ function openCreatePostModal() {
 
     deferredPrompt = null;
   }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations()
+      .then((registrations) => {
+        for (let i = 0; i < registrations.length; i++) {
+          registrations[i].unregister();
+        }
+      })
+  }
 }
 
 function closeCreatePostModal() {
@@ -91,12 +100,12 @@ fetch(url)
 
 if ('caches' in window) {
   caches.match(url)
-    .then(function(response) {
+    .then((response) => {
       if (response) {
         return response.json();
       }
     })
-    .then(function(data) {
+    .then((data) => {
       console.log('From cache', data);
       if (!networkDataReceived) {
         clearCards();
